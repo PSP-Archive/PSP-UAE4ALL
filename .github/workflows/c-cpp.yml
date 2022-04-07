@@ -31,6 +31,8 @@ jobs:
           cd build
           psp-cmake ..
           make
+          cd ..
+          mv build/EBOOT.PBP EBOOT.PBP          
       - name: Publish artifacts
         uses: actions/upload-artifact@v2
         with:
