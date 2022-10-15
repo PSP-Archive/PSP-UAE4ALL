@@ -112,7 +112,7 @@ struct color_entry colors_for_drawing;
    almost, but not quite, Amiga coordinates (there's a constant offset).  */
 union {
     /* Let's try to align this thing. */
-    double uupzuq;
+    float uupzuq;
     long int cruxmedo;
     uae_u8 apixels[MAX_PIXELS_PER_LINE * 2];
     uae_u16 apixels_w[MAX_PIXELS_PER_LINE * 2 / 2];
@@ -178,7 +178,7 @@ extern Uint32 uae4all_numframes;
 
 #ifdef DEBUG_FRAMERATE
 extern Uint32 uae4all_frameskipped;
-extern double uae4all_framerate;
+extern float uae4all_framerate;
 #endif
 
 static Uint32 proximo_frameskip;
@@ -242,9 +242,9 @@ static __inline__ void count_frame (void)
 		if (now-start_time>=1000)
 		{
 			if (uae4all_framerate!=0.0)
-				uae4all_framerate=(uae4all_framerate+((double)(uae4all_numframes-start_numframes)))/2.0;
+				uae4all_framerate=(uae4all_framerate+((float)(uae4all_numframes-start_numframes)))/2.0;
 			else
-				uae4all_framerate=(double)(uae4all_numframes-start_numframes);
+				uae4all_framerate=(float)(uae4all_numframes-start_numframes);
 			start_time=now;
 			start_numframes=uae4all_numframes;
 		}
@@ -1627,7 +1627,7 @@ static _INLINE_ void init_row_map (void)
 static _INLINE_ void init_aspect_maps (void)
 {
     int i, maxl;
-    double native_lines_per_amiga_line;
+    float native_lines_per_amiga_line;
 
     if (native2amiga_line_map)
 	free (native2amiga_line_map);

@@ -30,7 +30,11 @@ extern char uae4all_image_file2[];
 
 char *text_str_load_separator="----------------------------------";
 char *text_str_load_dir="#DIR#";
+#ifdef PSP
+char *text_str_load_title="   X)DF0-Enter Square)DF1 O)Back";
+#else
 char *text_str_load_title="            Filemanager            -";
+#endif
 fichero *text_dir_files=NULL;
 int text_dir_num_files=0, text_dir_num_files_index=0;
 
@@ -317,6 +321,38 @@ static int key_loadMenu(int *c)
 		if (event.type == SDL_QUIT)
 			end=-1;
 		else
+#ifdef PSP
+		if (event.type == SDL_JOYBUTTONDOWN){
+			uae4all_play_click();
+			switch(event.jbutton.button)
+			{
+				/*
+				case PSP_CTRL_START://11
+				case PSP_CTRL_SQUARE://3
+				case PSP_CTRL_CROSS://2
+				case PSP_CTRL_TRIANGLE://0
+				case PSP_CTRL_CIRCLE://1
+				case PSP_CTRL_RTRIGGER://5
+				case PSP_CTRL_LTRIGGER://4
+				case PSP_CTRL_LEFT://7
+				case PSP_CTRL_RIGHT://9
+				case PSP_CTRL_UP://8
+				case PSP_CTRL_DOWN://6
+				case PSP_CTRL_SELECT://10
+				case PSP_CTRL_HOME://12
+				*/
+				case 1: hit1=1 /* CANCEL */; break; /*  O button */
+				case 2: hit0=1 /* ENTER */; break; /* X button */
+				case 3: hit2=1 /* 2nd DISK */; break; /* [] button */
+				case 6: down=1; break;
+				case 7: left=1; break;
+				case 8: up=1; break;
+				case 9: right=1; break;
+
+				case 4: /* top of list */ text_dir_num_files_index=0; break;
+				case 5: /* bottom of list */ if (text_dir_num_files) text_dir_num_files_index=text_dir_num_files-1; break;
+			}
+#else
 		if (event.type == SDL_KEYDOWN)
 		{
 			uae4all_play_click();
@@ -351,6 +387,7 @@ static int key_loadMenu(int *c)
 						break;
 
 			}
+#endif
 			if ((hit0)||(hit2))
 			{
 				if ((text_dir_files[text_dir_num_files_index].d_type==4)||(!strcmp((char *)&text_dir_files[text_dir_num_files_index].d_name,"."))||(!strcmp((char *)&text_dir_files[text_dir_num_files_index].d_name,"..")))

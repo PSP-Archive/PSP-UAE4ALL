@@ -411,3 +411,6 @@
 #define tmpnam(a) "/ram/tmp"
 #endif
 
+#ifdef PSP
+#include <pspincludes.h>
+#endif

@@ -105,7 +105,7 @@ void clear_fame_mem_dummy(void)
 }
 
 int m68k_speed=5;
-static double cycles_factor=1.0;
+static float cycles_factor=1.0;
 static unsigned timeslice_shift=6;
 int next_positions[512];
 int *next_vpos=&next_positions[0];
@@ -289,7 +289,7 @@ static void m68k_run (void)
 #ifdef DEBUG_M68K
 		cycles=3413;
 #else
-		cycles=((unsigned)(((double)(M68KCONTEXT.cycles_counter-cycles_actual))*cycles_factor))<<8;
+		cycles=((unsigned)(((float)(M68KCONTEXT.cycles_counter-cycles_actual))*cycles_factor))<<8;
 
 #ifdef DEBUG_INTERRUPTS
 		dbgf("cycles=%i (%i) -> PC=%.8X\n",cycles>>8,(nextevent - currcycle)>>timeslice_shift,m68k_get_pc());
@@ -522,8 +522,8 @@ void init_memmaps(addrbank* banco)
 
 	memset(&micontexto_fpa,0,sizeof(unsigned)*256);
 
-	micontexto_fpa[0x10]=(unsigned)&uae_chk_handler;
-//	micontexto_fpa[0x2c]=(unsigned)&uae_chk_handler;
+	micontexto_fpa[0x04]=(unsigned)&uae_chk_handler;
+//	micontexto_fpa[0x10]=(unsigned)&uae_chk_handler; // FAME BUG !!!
 	micontexto.icust_handler = (unsigned int*)&micontexto_fpa;
 
 	micontexto.fetch=(struct M68K_PROGRAM *)&miprograma;

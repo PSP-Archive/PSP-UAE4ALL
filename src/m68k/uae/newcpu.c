@@ -1196,7 +1196,7 @@ static int do_specialties (int cycles)
     return 0;
 }
 
-static double cycles_factor;
+static float cycles_factor;
 
 
 /* Same thing, but don't use prefetch to get opcode.  */
@@ -1241,7 +1241,7 @@ SET_VFLG(0);
 	}
 	cycles=3413;
 #else
-	cycles = (((double)cycles)*cycles_factor);
+	cycles = (((float)cycles)*cycles_factor);
 #endif
 
 	uae4all_prof_start(1);

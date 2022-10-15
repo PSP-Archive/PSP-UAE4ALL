@@ -98,12 +98,12 @@ STATIC_INLINE void set_fpsr (uae_u32 x)
 
 
 /* single   : S  8*E 23*F */
-/* double   : S 11*E 52*F */
+/* float   : S 11*E 52*F */
 /* extended : S 15*E 64*F */
 /* E = 0 & F = 0 -> 0 */
 /* E = MAX & F = 0 -> Infin */
 /* E = MAX & F # 0 -> NotANumber */
-/* E = biased by 127 (single) ,1023 (double) ,16383 (extended) */
+/* E = biased by 127 (single) ,1023 (float) ,16383 (extended) */
 
 STATIC_INLINE fptype to_pack (uae_u32 wrd1, uae_u32 wrd2, uae_u32 wrd3)
 {
@@ -1211,7 +1211,7 @@ void fpp_opp (uae_u32 opcode, uae_u16 extra)
 	{
 	    int expon;
 	    frexp (src, &expon);
-	    uae_regs.fp[reg] = (double) (expon - 1);
+	    uae_regs.fp[reg] = (float) (expon - 1);
 	    MAKE_FPSR (uae_regs.fp[reg]);
 	}
 	break;
@@ -1231,7 +1231,7 @@ void fpp_opp (uae_u32 opcode, uae_u16 extra)
 	    MAKE_FPSR (uae_regs.fp[reg]);
 	    break;
 	case 0x21:		/* FMOD */
-	    uae_regs.fp[reg] = uae_regs.fp[reg] - (double) ((int) (uae_regs.fp[reg] / src)) * src;
+	    uae_regs.fp[reg] = uae_regs.fp[reg] - (float) ((int) (uae_regs.fp[reg] / src)) * src;
 	    MAKE_FPSR (uae_regs.fp[reg]);
 	    break;
 	case 0x22:		/* FADD */
@@ -1255,7 +1255,7 @@ void fpp_opp (uae_u32 opcode, uae_u16 extra)
 	    MAKE_FPSR (uae_regs.fp[reg]);
 	    break;
 	case 0x25:		/* FREM */
-	    uae_regs.fp[reg] = uae_regs.fp[reg] - (double) ((int) (uae_regs.fp[reg] / src + 0.5)) * src;
+	    uae_regs.fp[reg] = uae_regs.fp[reg] - (float) ((int) (uae_regs.fp[reg] / src + 0.5)) * src;
 	    MAKE_FPSR (uae_regs.fp[reg]);
 	    break;
 	case 0x26:		/* FSCALE */

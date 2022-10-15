@@ -19,7 +19,7 @@
 
 
 #ifdef USE_FAME_CORE
-#ifdef DREAMCAST
+#if defined(DREAMCAST) || defined(PSP)
 #define IO_CYCLE io_cycle_counter
 #else
 #define IO_CYCLE __io_cycle_counter

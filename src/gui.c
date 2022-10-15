@@ -36,7 +36,11 @@ unsigned long long uae4all_prof_executed[UAE4ALL_PROFILER_MAX];
 #include <SDL_dreamcast.h>
 #define VIDEO_FLAGS_INIT SDL_HWSURFACE|SDL_FULLSCREEN
 #else
-#define VIDEO_FLAGS_INIT SDL_HWSURFACE
+ #ifdef PSP
+ #define VIDEO_FLAGS_INIT SDL_SWSURFACE
+ #else
+ #define VIDEO_FLAGS_INIT SDL_HWSURFACE
+ #endif
 #endif
 
 #ifdef DOUBLEBUFFER
@@ -253,6 +257,37 @@ static void leftSuperThrottle(void)
 void gui_handle_events (void)
 {
 #ifndef DREAMCAST
+#ifdef PSP
+	/*
+	case PSP_CTRL_START://11
+	case PSP_CTRL_SQUARE://3
+	case PSP_CTRL_CROSS://2
+	case PSP_CTRL_TRIANGLE://0
+	case PSP_CTRL_CIRCLE://1
+	case PSP_CTRL_RTRIGGER://5
+	case PSP_CTRL_LTRIGGER://4
+	case PSP_CTRL_LEFT://7
+	case PSP_CTRL_RIGHT://9
+	case PSP_CTRL_UP://8
+	case PSP_CTRL_DOWN://6
+	case PSP_CTRL_SELECT://10
+	case PSP_CTRL_HOME://12
+	*/
+	/* mouse emulation using four directional buttons */
+	if (SDL_JoystickGetButton(uae4all_joy0,6)) /* down button */
+		{lastmy += 6;newmousecounters = 1;}
+	if (SDL_JoystickGetButton(uae4all_joy0,7)) /* left button */
+		{lastmx -= 6;newmousecounters = 1;}
+	if (SDL_JoystickGetButton(uae4all_joy0,8)) /* up button */
+		{lastmy -= 6;newmousecounters = 1;}
+	if (SDL_JoystickGetButton(uae4all_joy0,9)) /* right button */
+		{lastmx += 6;newmousecounters = 1;}
+	if (SDL_JoystickGetButton(uae4all_joy0,2)) /* X button */
+		buttonstate[0] = 1;
+	if (SDL_JoystickGetButton(uae4all_joy0,1)) /* O  button */
+		buttonstate[2] = 1;
+	if (SDL_JoystickGetButton(uae4all_joy0,10)) /* select button */
+#else
 	Uint8 *keystate = SDL_GetKeyState(NULL);
 	if ( keystate[SDLK_PAGEUP] )
 		goSuperThrottle();
@@ -262,12 +297,18 @@ void gui_handle_events (void)
 		SDL_WM_ToggleFullScreen(prSDLScreen);
 	else
 	if ( keystate[SDLK_F11] )
+#endif
 #else
 	if (SDL_JoystickGetButton(uae4all_joy0,3) || SDL_JoystickGetButton(uae4all_joy1,3) )
 #endif
 		goMenu();
+#if defined(PSP)||defined(DREAMCAST)
 #ifdef DREAMCAST
 	if (SDL_JoystickGetAxis (uae4all_joy0, 2))
+#endif
+#ifdef PSP
+	if (SDL_JoystickGetButton(uae4all_joy0,4)) /* left button */
+#endif
 	{
 		if (vkbd_mode)
 		{
@@ -283,7 +324,12 @@ void gui_handle_events (void)
 			goingSuperThrottle=0;
 		else
 			goingVkbd=0;
+#ifdef DREAMCAST
 	if (SDL_JoystickGetAxis (uae4all_joy0, 3))
+#endif
+#ifdef PSP
+	if (SDL_JoystickGetButton(uae4all_joy0,5)) /* right button */
+#endif
 	{
 		if (goingSuperThrottle)
 			goSuperThrottle();
@@ -382,7 +428,7 @@ void uae4all_prof_add(char *msg)
 void uae4all_prof_show(void)
 {
 	unsigned i;
-	double toper=0;
+	float toper=0;
 #ifndef DREAMCAST
 	unsigned long long to=SDL_GetTicks()-uae4all_prof_total_initial;
 #else
@@ -397,9 +443,9 @@ void uae4all_prof_show(void)
 	for(i=0;i<uae4all_prof_total;i++)
 	{
 		unsigned long long t0=uae4all_prof_sum[i];
-		double percent=(double)t0;
+		float percent=(float)t0;
 		percent*=100.0;
-		percent/=(double)to;
+		percent/=(float)to;
 		toper+=percent;
 #ifdef DREAMCAST
 		t0/=1000;

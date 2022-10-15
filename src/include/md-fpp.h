@@ -9,13 +9,13 @@
   */
 
 #ifndef HAVE_to_single
-static __inline__ double to_single (uae_u32 value)
+static __inline__ float to_single (uae_u32 value)
 {
-    double frac;
+    float frac;
 
     if ((value & 0x7fffffff) == 0)
         return (0.0);
-    frac = (double) ((value & 0x7fffff) | 0x800000) / 8388608.0;
+    frac = (float) ((value & 0x7fffff) | 0x800000) / 8388608.0;
     if (value & 0x80000000)
         frac = -frac;
     return (ldexp (frac, ((value >> 23) & 0xff) - 127));
@@ -23,11 +23,11 @@ static __inline__ double to_single (uae_u32 value)
 #endif
 
 #ifndef HAVE_from_single
-static __inline__ uae_u32 from_single (double src)
+static __inline__ uae_u32 from_single (float src)
 {
     int expon;
     uae_u32 tmp;
-    double frac;
+    float frac;
 
     if (src == 0.0)
         return 0;
@@ -49,14 +49,14 @@ static __inline__ uae_u32 from_single (double src)
 #endif
 
 #ifndef HAVE_to_exten
-static __inline__ double to_exten(uae_u32 wrd1, uae_u32 wrd2, uae_u32 wrd3)
+static __inline__ float to_exten(uae_u32 wrd1, uae_u32 wrd2, uae_u32 wrd3)
 {
-    double frac;
+    float frac;
 
     if ((wrd1 & 0x7fff0000) == 0 && wrd2 == 0 && wrd3 == 0)
         return 0.0;
-    frac = (double) wrd2 / 2147483648.0 +
-        (double) wrd3 / 9223372036854775808.0;
+    frac = (float) wrd2 / 2147483648.0 +
+        (float) wrd3 / 9223372036854775808.0;
     if (wrd1 & 0x80000000)
         frac = -frac;
     return ldexp (frac, ((wrd1 >> 16) & 0x7fff) - 16383);
@@ -64,10 +64,10 @@ static __inline__ double to_exten(uae_u32 wrd1, uae_u32 wrd2, uae_u32 wrd3)
 #endif
 
 #ifndef HAVE_from_exten
-static __inline__ void from_exten(double src, uae_u32 * wrd1, uae_u32 * wrd2, uae_u32 * wrd3)
+static __inline__ void from_exten(float src, uae_u32 * wrd1, uae_u32 * wrd2, uae_u32 * wrd3)
 {
     int expon;
-    double frac;
+    float frac;
 
     if (src == 0.0) {
         *wrd1 = 0;
@@ -94,14 +94,14 @@ static __inline__ void from_exten(double src, uae_u32 * wrd1, uae_u32 * wrd2, ua
 #endif
 
 #ifndef HAVE_to_double
-static __inline__ double to_double(uae_u32 wrd1, uae_u32 wrd2)
+static __inline__ float to_double(uae_u32 wrd1, uae_u32 wrd2)
 {
-    double frac;
+    float frac;
 
     if ((wrd1 & 0x7fffffff) == 0 && wrd2 == 0)
         return 0.0;
-    frac = (double) ((wrd1 & 0xfffff) | 0x100000) / 1048576.0 +
-        (double) wrd2 / 4503599627370496.0;
+    frac = (float) ((wrd1 & 0xfffff) | 0x100000) / 1048576.0 +
+        (float) wrd2 / 4503599627370496.0;
     if (wrd1 & 0x80000000)
         frac = -frac;
     return ldexp (frac, ((wrd1 >> 20) & 0x7ff) - 1023);
@@ -109,11 +109,11 @@ static __inline__ double to_double(uae_u32 wrd1, uae_u32 wrd2)
 #endif
 
 #ifndef HAVE_from_double
-static __inline__ void from_double(double src, uae_u32 * wrd1, uae_u32 * wrd2)
+static __inline__ void from_double(float src, uae_u32 * wrd1, uae_u32 * wrd2)
 {
     int expon;
     int tmp;
-    double frac;
+    float frac;
 
     if (src == 0.0) {
         *wrd1 = 0;

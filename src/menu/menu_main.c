@@ -12,12 +12,21 @@
 
 extern int emulating;
 
+#ifdef PSP
+static char *text_str_title="---- PSP UAE4ALL r1 ----";
+static char *text_str_load="Select Disk (Square)";
+#else
 static char *text_str_title="----- UAE4ALL rc1 ------";
 static char *text_str_load="Select Image Disk (X)";
+#endif
 static char *text_str_throttle="Throttle ";
 static char *text_str_frameskip="Frameskip";
 static char *text_str_autosave="Save Disks";
+#ifdef PSP
+static char *text_str_eject="Eject DF1 (Triangle)";
+#else
 static char *text_str_eject="Eject DF1 (Y)";
+#endif
 static char *text_str_20="20";
 static char *text_str_40="40";
 static char *text_str_60="60";
@@ -36,7 +45,11 @@ static char *text_str_off="off";
 static char *text_str_separator="------------------------------";
 static char *text_str_reset="Reset (R)";
 static char *text_str_run="Run (L)";
+#ifdef PSP
+static char *text_str_exit="Exit PSP UAE4ALL";
+#else
 static char *text_str_exit="Exit - Reboot Dreamcast";
+#endif
 
 #if !defined(DEBUG_UAE4ALL) && !defined(PROFILER_UAE4ALL) && !defined(AUTO_RUN) && !defined(AUTO_FRAMERATE)
 int mainMenu_throttle=3;
@@ -218,6 +231,38 @@ static int key_mainMenu(int *cp)
 			end=-1;
 		}
 		else
+#ifdef PSP
+		if (event.type == SDL_JOYBUTTONDOWN){
+			uae4all_play_click();
+			switch(event.jbutton.button)
+			{
+				/*
+				case PSP_CTRL_START://11
+				case PSP_CTRL_SQUARE://3
+				case PSP_CTRL_CROSS://2
+				case PSP_CTRL_TRIANGLE://0
+				case PSP_CTRL_CIRCLE://1
+				case PSP_CTRL_RTRIGGER://5
+				case PSP_CTRL_LTRIGGER://4
+				case PSP_CTRL_LEFT://7
+				case PSP_CTRL_RIGHT://9
+				case PSP_CTRL_UP://8
+				case PSP_CTRL_DOWN://6
+				case PSP_CTRL_SELECT://10
+				case PSP_CTRL_HOME://12
+				*/
+				case 0: hit4=1 /* EJECT */ ; break; /* /\ button */
+				case 1: hit1=1 /* CANCEL */; break; /*  O button */
+				case 2: hit0=1 /* ENTER */; break; /* X button */
+				case 3: hit3=1 /* LOAD_FILE */; break; /* []  button */
+				case 4: hit5=1 /* RUN */; break; /* L button */
+				case 5: hit2=1 /* RESET */; break; /* R button */
+				case 6: down=1; break;
+				case 7: left=1; break;
+				case 8: up=1; break;
+				case 9: right=1; break;
+			}
+#else
 		if (event.type == SDL_KEYDOWN)
 		{
 			uae4all_play_click();
@@ -246,6 +291,7 @@ static int key_mainMenu(int *cp)
 				case SDLK_q:
 				case SDLK_LALT: hit1=1; break;
 			}
+#endif
 			if (hit1)
 			{
 				mainMenu_case=MAIN_MENU_CASE_CANCEL;
@@ -415,6 +461,9 @@ int run_mainMenu()
 
 	while(mainMenu_case<0)
 	{
+#ifdef PSP
+		scePowerSetClockFrequency(222,222,111);				
+#endif
 		raise_mainMenu();
 		end=0;
 		while(!end)
@@ -431,27 +480,48 @@ int run_mainMenu()
 				break;
 			case MAIN_MENU_CASE_EJECT:
 				mainMenu_case=3;
+#ifdef PSP
+				scePowerSetClockFrequency(333,333,166);				
+#endif
 				break;
 			case MAIN_MENU_CASE_CANCEL:
 				if (emulating)
 					mainMenu_case=1;
 				else
 					mainMenu_case=-1;
+#ifdef PSP
+				scePowerSetClockFrequency(333,333,166);				
+#endif
 				break;
 			case MAIN_MENU_CASE_RESET:
 				if (emulating)
 				{
 					mainMenu_case=2;
+#ifdef PSP
+					scePowerSetClockFrequency(333,333,166);				
+#endif
 					break;
 				}
 			case MAIN_MENU_CASE_RUN:
 				mainMenu_case=1;
+#ifdef PSP
+				scePowerSetClockFrequency(333,333,166);				
+#endif
 				break;
 			case MAIN_MENU_CASE_REBOOT:
 #ifdef DREAMCAST
 				arch_reboot();
 #else
+#ifdef PSP
+				graphics_leave ();
+				close_joystick ();
+				close_sound ();
+				zfile_exit ();
+				SDL_Quit ();
+				sceKernelExitGame(); 
+#else
 				exit(0);
+#endif
 #endif
 				break;
 			default:

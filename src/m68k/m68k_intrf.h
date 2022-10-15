@@ -2,7 +2,7 @@
 
 #ifdef USE_FAME_CORE
 
-#ifdef DREAMCAST
+#if defined(DREAMCAST) || defined(USE_FAME_CORE_C)
 #define M68KCONTEXT m68kcontext
 #else
 #define M68KCONTEXT _m68kcontext

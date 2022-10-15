@@ -60,15 +60,15 @@ extern unsigned long op_illg (uae_u32) REGPARAM;
 
 typedef char flagtype;
 
-/* You can set this to long double to be more accurate. However, the
+/* You can set this to long float to be more accurate. However, the
    resulting alignment issues will cost a lot of performance in some
    apps */
 #define USE_LONG_DOUBLE 0
 
 #if USE_LONG_DOUBLE
-typedef long double fptype;
+typedef long float fptype;
 #else
-typedef double fptype;
+typedef float fptype;
 #endif
 
 extern struct uae_regstruct

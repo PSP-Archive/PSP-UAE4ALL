@@ -42,8 +42,10 @@
 #include <values.h>
 #endif
 
+#ifndef PSP
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
+#endif
 #endif
 #ifdef HAVE_STRING_H
 #include <string.h>

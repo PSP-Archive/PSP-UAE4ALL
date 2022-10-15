@@ -176,7 +176,7 @@ void sound_default_evtime(void)
 
 
 #ifdef DEBUG_FRAMERATE
-double media_ratio=0;
+float media_ratio=0;
 static __inline__ void calcule_audio_ratio(void)
 {
 	unsigned long long ahora=timer_us_gettime64();
@@ -185,9 +185,9 @@ static __inline__ void calcule_audio_ratio(void)
 	if (antes)
 	{
 		if (media_ratio!=0)
-			media_ratio=(media_ratio+(((double)(ahora-antes))))/2.0;
+			media_ratio=(media_ratio+(((float)(ahora-antes))))/2.0;
 		else
-			media_ratio=(double)(ahora-antes);
+			media_ratio=(float)(ahora-antes);
 		antes=ahora;
 	}
 	else

@@ -12,14 +12,7 @@ SDLKey vkbd_key=(SDLKey)0;
 SDLKey vkbd_button2=(SDLKey)0;
 int vkbd_keysave=-1234567;
 
-#ifndef DREAMCAST
-
-int vkbd_init(void) { return 0; }
-void vkbd_init_button2(void) { }
-void vkbd_quit(void) { }
-SDLKey vkbd_process(void) { return (SDLKey)0; }
-
-#else
+#if defined(DREAMCAST) || defined(PSP)
 
 #define MAX_KEY 110
 
@@ -255,5 +248,12 @@ SDLKey vkbd_process(void)
 #endif
 	return (SDLKey)0;
 }
+
+#else
+
+int vkbd_init(void) { return 0; }
+void vkbd_init_button2(void) { }
+void vkbd_quit(void) { }
+SDLKey vkbd_process(void) { return (SDLKey)0; }
 
 #endif

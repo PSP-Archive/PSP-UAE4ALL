@@ -1,0 +1,135 @@
+NAME   = UAE4ALL
+VER    = r1
+O      = o
+RM     = rm -f
+CC     = psp-gcc
+CXX    = psp-g++
+FIXIMP = psp-fixup-imports
+STRIP  = psp-strip
+PACK   = psp-packer
+
+PROG   = $(NAME).elf
+PSPDEV = $(shell psp-config -P)
+PSPSDK = $(shell psp-config -p)
+
+PSP_USERMODE=1
+
+DEFAULT_CFLAGS  = -march=allegrex -G0 -DPSP -I$(PSPDEV)/include -I$(PSPDEV)/include/SDL -I$(PSPSDK)/include
+LDFLAGS      = -L$(PSPDEV)/lib -lstdc++ -lSDL_mixer -lSDL -lSDL_gfx -lm -lGL -lvorbisidec -lz
+LDFLAGS     += -L$(PSPSDK)/lib -lpspvfpu -lpspdebug -lpspgu -lpspctrl -lpspge -lpspdisplay -lpsphprm -lpspsdk -lpsprtc -lpspaudio -lc -lpspuser -lpsputility -lpspkernel -lpspnet_inet -lpsppower 
+
+MORE_CFLAGS = -O3 -mhard-float -msingle-float -Isrc/ -Isrc/include/ -Isrc/menu -Isrc/vkbd
+ifdef PSP_USERMODE
+MORE_CFLAGS += -DPSP_USERMODE -D_PSP_FW_VERSION=152
+endif
+
+#MORE_CFLAGS+= -fomit-frame-pointer  -Wno-unused -Wno-format
+MORE_CFLAGS+= -DUSE_SDL -DGCCCONSTFUNC="__attribute__((const))"
+MORE_CFLAGS+= -DUSE_UNDERSCORE
+#MORE_CFLAGS+= -fno-exceptions
+MORE_CFLAGS+= -DUNALIGNED_PROFITABLE
+MORE_CFLAGS+= -DREGPARAM="__attribute__((regparm(3)))"
+MORE_CFLAGS+= -DOPTIMIZED_FLAGS
+MORE_CFLAGS+= -D__inline__=__inline__
+MORE_CFLAGS+= -DSHM_SUPPORT_LINKS=0
+MORE_CFLAGS+= -DOS_WITHOUT_MEMORY_MANAGEMENT
+#MORE_CFLAGS+= -DVKBD_ALWAYS
+MORE_CFLAGS+= -DMENU_MUSIC
+#MORE_CFLAGS+= -DDOUBLEBUFFER
+MORE_CFLAGS+= -DUSE_FAME_CORE -DUSE_FAME_CORE_C
+
+MORE_CFLAGS+= -DROM_PATH_PREFIX=\"./disks/\" -DDATA_PREFIX=\"./data/\" -DSAVE_PREFIX=\"./\"
+
+#MORE_CFLAGS+= -DUSE_AUTOCONFIG
+#MORE_CFLAGS+= -DUAE_CONSOLE
+
+MORE_CFLAGS+= -DUSE_ZFILE
+
+#MORE_CFLAGS+= -DUAE4ALL_NO_USE_RESTRICT
+
+#MORE_CFLAGS+= -DNO_SOUND
+#MORE_CFLAGS+= -DNO_THREADS
+
+#MORE_CFLAGS+= -DDEBUG_TIMESLICE
+
+MORE_CFLAGS+= -DFAME_INTERRUPTS_PATCH
+#MORE_CFLAGS+= -DFAME_INTERRUPTS_SECURE_PATCH
+
+#MORE_CFLAGS+= -DUAE_MEMORY_ACCESS
+#MORE_CFLAGS+= -DSAFE_MEMORY_ACCESS
+#MORE_CFLAGS+= -DERROR_WHEN_MEMORY_OVERRUN
+
+#MORE_CFLAGS+= -DDEBUG_UAE4ALL
+#MORE_CFLAGS+= -DDEBUG_UAE4ALL_FFLUSH
+#MORE_CFLAGS+= -DDEBUG_M68K
+#MORE_CFLAGS+= -DDEBUG_INTERRUPTS
+#MORE_CFLAGS+= -DDEBUG_CIA
+#MORE_CFLAGS+= -DDEBUG_SOUND
+#MORE_CFLAGS+= -DDEBUG_MEMORY
+#MORE_CFLAGS+= -DDEBUG_DISK
+#MORE_CFLAGS+= -DDEBUG_CUSTOM
+#MORE_CFLAGS+= -DDEBUG_EVENTS
+#MORE_CFLAGS+= -DDEBUG_GFX
+#MORE_CFLAGS+= -DDEBUG_BLITTER
+#MORE_CFLAGS+= -DDEBUG_FRAMERATE
+#MORE_CFLAGS+= -DAUTO_FRAMERATE=1400
+#MORE_CFLAGS+= -DMAX_AUTO_FRAMERATE=4400
+#MORE_CFLAGS+= -DAUTO_FRAMERATE_SOUND
+#MORE_CFLAGS+= -DSTART_DEBUG=2609
+#MORE_CFLAGS+= -DMAX_AUTOEVENTS=2610
+#MORE_CFLAGS+= -DAUTO_RUN
+
+
+#MORE_CFLAGS+= -DPROFILER_UAE4ALL
+
+CFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
+
+OBJS =	\
+	src/audio.o \
+	src/autoconf.o \
+	src/blitfunc.o \
+	src/blittable.o \
+	src/blitter.o \
+	src/cia.o \
+	src/savedisk.o \
+	src/compiler.o \
+	src/custom.o \
+	src/disk.o \
+	src/drawing.o \
+	src/ersatz.o \
+	src/gfxutil.o \
+	src/keybuf.o \
+	src/main.o \
+	src/md-support.o \
+	src/memory.o \
+	src/missing.o \
+	src/gui.o \
+	src/od-joy.o \
+	src/sound.o \
+	src/sdlgfx.o \
+	src/writelog.o \
+	src/zfile.o \
+	src/menu/fade.o \
+	src/menu/menu.o \
+	src/menu/menu_load.o \
+	src/menu/menu_main.o \
+	src/vkbd/vkbd.o \
+	src/m68k/fame/famec.o \
+	src/m68k/fame/m68k_intrf.o
+
+all: EBOOT.PBP
+
+$(PROG): $(OBJS) 
+	$(CC) $(CFLAGS) -o $(PROG) $(OBJS) $(LDFLAGS)
+	$(FIXIMP) $(PROG)
+	$(STRIP) $(PROG)
+ifndef PSP_USERMODE
+	$(PACK) $(PROG)
+endif
+
+EBOOT.PBP : $(PROG)
+	mksfo "  PSP $(NAME) $(VER) by TTYman" $(NAME).sfo
+	pack-pbp EBOOT.PBP $(NAME).sfo data/psp-eboot-icon.png NULL NULL NULL NULL $(PROG) NULL
+
+clean:
+	$(RM) EBOOT.PBP $(NAME).sfo $(PROG) $(OBJS)

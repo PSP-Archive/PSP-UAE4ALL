@@ -9,7 +9,7 @@
   * Copyright 1999 Sam Jordan
   */
 
-static __inline__ double to_single (uae_u32 value)
+static __inline__ float to_single (uae_u32 value)
 {
     union {
         float f;
@@ -20,7 +20,7 @@ static __inline__ double to_single (uae_u32 value)
     return val.f;
 }
 
-static __inline__ uae_u32 from_single (double src)
+static __inline__ uae_u32 from_single (float src)
 {
     union {
         float f;
@@ -31,10 +31,10 @@ static __inline__ uae_u32 from_single (double src)
     return val.u;
 }
 
-static __inline__ double to_double(uae_u32 wrd1, uae_u32 wrd2)
+static __inline__ float to_double(uae_u32 wrd1, uae_u32 wrd2)
 {
     union {
-        double d;
+        float d;
         uae_u32 u[2];
     } val;
 
@@ -43,10 +43,10 @@ static __inline__ double to_double(uae_u32 wrd1, uae_u32 wrd2)
     return val.d;
 }
 
-static __inline__ void from_double(double src, uae_u32 * wrd1, uae_u32 * wrd2)
+static __inline__ void from_double(float src, uae_u32 * wrd1, uae_u32 * wrd2)
 {
     union {
-        double d;
+        float d;
         uae_u32 u[2];
     } val;
 

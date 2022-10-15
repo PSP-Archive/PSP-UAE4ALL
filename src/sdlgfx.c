@@ -64,7 +64,7 @@ Uint32 uae4all_numframes=0;
 #ifdef DEBUG_FRAMERATE
 
 Uint32 uae4all_frameskipped=0;
-double uae4all_framerate=0.0;
+float uae4all_framerate=0.0;
 
 void uae4all_update_time(void)
 {
@@ -76,17 +76,17 @@ void uae4all_update_time(void)
 void uae4all_show_time(void)
 {
 	int i;
-	extern double media_ratio;
+	extern float media_ratio;
 	extern unsigned sound_cuantos[8];
 	extern unsigned sound_ajustes;
 	extern unsigned sound_alcanza_callback;
 	extern unsigned sound_alcanza_render;
-	double p=(((double)uae4all_frameskipped)*((double)100.0))/((double)uae4all_numframes);
+	float p=(((float)uae4all_frameskipped)*((float)100.0))/((float)uae4all_numframes);
 	printf("---- frameskipping = %.4f%%\n",p);
 	printf("---- framerate = %.4f\n",uae4all_framerate);
 	printf("---- audio ratio media = %.2f msec\n",media_ratio/1000.0);
 	for(i=0;i<8;i++)
-		printf("distancia %i = %i -> %.2f%%\n",i,sound_cuantos[i],(((double)sound_cuantos[i])*100.0)/((double)sound_ajustes));
+		printf("distancia %i = %i -> %.2f%%\n",i,sound_cuantos[i],(((float)sound_cuantos[i])*100.0)/((float)sound_ajustes));
 	printf("CALLBACK ALCANZA %i VECES A RENDER\n",sound_alcanza_callback);
 	printf("RENDER ALCANZA %i VECES A CALLBACK\n",sound_alcanza_render);
 }
@@ -96,7 +96,11 @@ void uae4all_show_time(void)
 #ifdef DREAMCAST
 #define VIDEO_FLAGS_INIT SDL_HWSURFACE|SDL_FULLSCREEN
 #else
-#define VIDEO_FLAGS_INIT SDL_HWSURFACE
+ #ifdef PSP
+ #define VIDEO_FLAGS_INIT SDL_SWSURFACE
+ #else
+ #define VIDEO_FLAGS_INIT SDL_HWSURFACE
+ #endif
 #endif
 
 #ifdef DOUBLEBUFFER
@@ -594,6 +598,8 @@ break;
 	    break;
 	    break;
 	case SDL_JOYBUTTONDOWN:
+		if (rEvent.jbutton.button==2) buttonstate[0] = 1;
+		if (rEvent.jbutton.button==1) buttonstate[2] = 1;
 	    if ((rEvent.jbutton.button==6) && (!vkbd_mode) && (vkbd_button2!=(SDLKey)0))
 	    {
 		    if (vkbd_button2)
@@ -623,6 +629,8 @@ break;
 	    }
 	    break;
 	case SDL_JOYBUTTONUP:
+		if (rEvent.jbutton.button==2) buttonstate[0] = 0;
+		if (rEvent.jbutton.button==1) buttonstate[2] = 0;
 	    if ((rEvent.jbutton.button==6) && (!vkbd_mode) && (vkbd_button2!=(SDLKey)0))
 	    {
 		    if (vkbd_button2)
